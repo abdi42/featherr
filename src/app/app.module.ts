@@ -8,6 +8,14 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { EmojiProvider } from '../providers/emoji';
 import { HttpClientModule } from "@angular/common/http";
+import { AngularFireModule } from 'angularfire2';
+import { AngularFireDatabase } from 'angularfire2/database';
+
+export const firebaseConfig = {
+  apiKey: "AIzaSyAzPNbO00hRzAOtCOxCq6SRpPzgJBdJmYI",
+  databaseURL: 'https://featherr-ba91a.firebaseio.com',
+  projectId: 'featherr-ba91a',
+};
 
 
 @NgModule({
@@ -22,6 +30,7 @@ import { HttpClientModule } from "@angular/common/http";
       tabsLayout:'icon-left',
       preloadModules: true
     }),
+    AngularFireModule.initializeApp(firebaseConfig)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -31,7 +40,8 @@ import { HttpClientModule } from "@angular/common/http";
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    EmojiProvider
+    EmojiProvider,
+    AngularFireDatabase
   ]
 })
 export class AppModule {}

@@ -2,6 +2,8 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { Events, Content } from 'ionic-angular';
 import { ChatService, ChatMessage, UserInfo } from "../../providers/chat-service";
+import { AngularFireDatabase } from 'angularfire2/database';
+import { Observable } from 'rxjs/Observable';
 
 @IonicPage()
 @Component({
@@ -12,16 +14,20 @@ export class Chat {
 
   @ViewChild(Content) content: Content;
   @ViewChild('chat_input') messageInput: ElementRef;
-  msgList: ChatMessage[] = [];
+  msgList: Observable<any[]>;
   user: UserInfo;
   toUser: UserInfo;
   editorMsg = '';
   showEmojiPicker = false;
+  db: AngularFirestore;
+  msgListRef;
 
   constructor(navParams: NavParams,
               private chatService: ChatService,
-              private events: Events,) {
+              private events: Events,db: AngularFireDatabase) {
     // Get the navParams toUserId parameter
+    this.db = db;
+    this.msgListRef = this.db.list('messages');
     this.toUser = {
       id: navParams.get('toUserId'),
       name: navParams.get('toUserName')
@@ -71,12 +77,18 @@ export class Chat {
    */
   getMsg() {
     // Get mock message list
+
+    this.msgList = this.db.list('messages').valueChanges();
+
+    /*
     return this.chatService
     .getMsgList()
     .subscribe(res => {
       this.msgList = res;
       this.scrollToBottom();
     });
+    */
+
   }
 
   /**
@@ -109,7 +121,11 @@ export class Chat {
     .then(() => {
       let index = this.getMsgIndexById(id);
       if (index !== -1) {
-        this.msgList[index].status = 'success';
+        this.msgList.subscribe(msgs => {
+            // items is an array
+            console.log(msgs,index)
+            msgs[index].status = 'success'
+        });
       }
     })
   }
@@ -123,15 +139,17 @@ export class Chat {
       toUserId = this.toUser.id;
     // Verify user relationships
     if (msg.userId === userId && msg.toUserId === toUserId) {
-      this.msgList.push(msg);
+      this.msgListRef.push(msg);
     } else if (msg.toUserId === userId && msg.userId === toUserId) {
-      this.msgList.push(msg);
+      this.msgListRef.push(msg);
     }
     this.scrollToBottom();
   }
 
   getMsgIndexById(id: string) {
-    return this.msgList.findIndex(e => e.messageId === id)
+    this.msgList.subscribe(msgs => {
+        return msgs.findIndex(e => e.messageId === id)
+    });
   }
 
   scrollToBottom() {

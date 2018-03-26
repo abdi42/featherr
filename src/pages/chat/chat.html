@@ -10,7 +10,7 @@
 
   <div class="message-wrap">
 
-    <div *ngFor="let msg of msgList"
+    <div *ngFor="let msg of msgList | async"
          class="message"
          [class.left]=" msg.userId === toUser.id "
          [class.right]=" msg.userId === user.id ">
