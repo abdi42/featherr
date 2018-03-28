@@ -10,6 +10,7 @@ import { EmojiProvider } from '../providers/emoji';
 import { HttpClientModule } from "@angular/common/http";
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabase } from 'angularfire2/database';
+import { AuthProvider } from '../providers/auth/auth';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyAzPNbO00hRzAOtCOxCq6SRpPzgJBdJmYI",
@@ -41,7 +42,8 @@ export const firebaseConfig = {
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     EmojiProvider,
-    AngularFireDatabase
+    AngularFireDatabase,
+    AuthProvider
   ]
 })
 export class AppModule {}

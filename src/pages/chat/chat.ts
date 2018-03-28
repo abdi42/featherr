@@ -14,12 +14,12 @@ export class Chat {
 
   @ViewChild(Content) content: Content;
   @ViewChild('chat_input') messageInput: ElementRef;
-  msgList: Observable<any[]>;
+  msgList: Observable<ChatMessage[]>;
   user: UserInfo;
   toUser: UserInfo;
   editorMsg = '';
   showEmojiPicker = false;
-  db: AngularFirestore;
+  db: AngularFireDatabase;
   msgListRef;
 
   constructor(navParams: NavParams,
@@ -110,7 +110,7 @@ export class Chat {
       status: 'pending'
     };
 
-    this.pushNewMsg(newMsg);
+    //this.pushNewMsg(newMsg);
     this.editorMsg = '';
 
     if (!this.showEmojiPicker) {
@@ -118,16 +118,7 @@ export class Chat {
     }
 
     this.chatService.sendMsg(newMsg)
-    .then(() => {
-      let index = this.getMsgIndexById(id);
-      if (index !== -1) {
-        this.msgList.subscribe(msgs => {
-            // items is an array
-            console.log(msgs,index)
-            msgs[index].status = 'success'
-        });
-      }
-    })
+    this.scrollToBottom()
   }
 
   /**
@@ -139,17 +130,17 @@ export class Chat {
       toUserId = this.toUser.id;
     // Verify user relationships
     if (msg.userId === userId && msg.toUserId === toUserId) {
-      this.msgListRef.push(msg);
-    } else if (msg.toUserId === userId && msg.userId === toUserId) {
-      this.msgListRef.push(msg);
-    }
+      this.msgListRef.push(msg).then((item) => {
+        const itemref = this.db.object('messages/' + item.key);
+        itemref.update({status:'success'});
+      });
+    } /*else if (msg.toUserId === userId && msg.userId === toUserId) {
+      this.msgListRef.push(msg).then((item) => {
+        const itemref = this.db.object('messages/' + item.key);
+        itemref.update({status:'success'});
+      });
+    }*/
     this.scrollToBottom();
-  }
-
-  getMsgIndexById(id: string) {
-    this.msgList.subscribe(msgs => {
-        return msgs.findIndex(e => e.messageId === id)
-    });
   }
 
   scrollToBottom() {

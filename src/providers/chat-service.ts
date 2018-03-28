@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular';
 import { map } from 'rxjs/operators/map';
 import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs/Observable";
+import { AngularFireDatabase } from 'angularfire2/database';
+import { Observable } from 'rxjs/Observable';
 
 export class ChatMessage {
   messageId: string;
@@ -23,9 +24,12 @@ export class UserInfo {
 
 @Injectable()
 export class ChatService {
+  db: AngularFireDatabase;
+  msgListRef;
 
-  constructor(private http: HttpClient,
-              private events: Events) {
+  constructor(private http: HttpClient,private events: Events,db: AngularFireDatabase) {
+    this.db = db;
+    this.msgListRef = this.db.list('messages');
   }
 
   mockNewMsg(msg) {
@@ -46,14 +50,17 @@ export class ChatService {
   }
 
   getMsgList(): Observable<ChatMessage[]> {
-    const msgListUrl = './assets/mock/msg-list.json';
-    return this.http.get<any>(msgListUrl)
-    .pipe(map(response => response.array));
+    return this.db.list('messages').valueChanges();
   }
 
   sendMsg(msg: ChatMessage) {
-    return new Promise(resolve => setTimeout(() => resolve(msg), Math.random() * 1000))
-    .then(() => this.mockNewMsg(msg));
+    return new Promise((resolve,reject) => {
+      this.msgListRef.push(msg).then((item) => {
+        const itemref = this.db.object('messages/' + item.key);
+        itemref.update({status:'success'});
+        resolve(item);
+      });
+    })
   }
 
   getUserInfo(): Promise<UserInfo> {
