@@ -22,9 +22,6 @@ export class MyApp {
       if (!user) {
         this.rootPage = 'LoginPage';
         unsubscribe();
-      } else {
-        this.rootPage = 'TabsPage';
-        unsubscribe();
       }
     });
 

@@ -54,8 +54,9 @@ export class LoginPage {
       this.authProvider.loginUser(this.loginForm.value.email,
         this.loginForm.value.password)
       .then( authData => {
+        console.log(authData)
         this.loading.dismiss().then( () => {
-          this.navCtrl.setRoot(HomePage);
+          this.navCtrl.setRoot('TabsPage');
         });
       }, error => {
         this.loading.dismiss().then( () => {

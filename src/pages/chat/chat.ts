@@ -14,40 +14,41 @@ export class Chat {
 
   @ViewChild(Content) content: Content;
   @ViewChild('chat_input') messageInput: ElementRef;
-  msgList: Observable<ChatMessage[]>;
+  msgList: Observable<any[]>;
   user: UserInfo;
   toUser: UserInfo;
   editorMsg = '';
   showEmojiPicker = false;
-  db: AngularFireDatabase;
   msgListRef;
 
   constructor(navParams: NavParams,
               private chatService: ChatService,
-              private events: Events,db: AngularFireDatabase) {
+              private events: Events,private db: AngularFireDatabase) {
     // Get the navParams toUserId parameter
-    this.db = db;
-    this.msgListRef = this.db.list('messages');
     this.toUser = {
       id: navParams.get('toUserId'),
-      name: navParams.get('toUserName')
+      name: navParams.get('toUserName'),
+      groupId:''
     };
     // Get mock user information
-    this.chatService.getUserInfo()
-    .then((res) => {
-      this.user = res
-    });
   }
 
   ionViewWillLeave() {
     // unsubscribe
+    console.log(this.db.list('/groups').valueChanges())
     this.events.unsubscribe('chat:received');
   }
 
   ionViewDidEnter() {
     //get message list
-    this.getMsg();
-
+    this.chatService.getUserInfo()
+    .then((res) => {
+      console.log(res)
+      this.user = res
+      this.msgListRef = this.db.list('groups/' + this.user.groupId + '/messages');
+      this.getMsg();
+      this.scrollToBottom();
+    });
     // Subscribe to received  new message events
     this.events.subscribe('chat:received', msg => {
       this.pushNewMsg(msg);
@@ -76,19 +77,7 @@ export class Chat {
    * @returns {Promise<ChatMessage[]>}
    */
   getMsg() {
-    // Get mock message list
-
-    this.msgList = this.db.list('messages').valueChanges();
-
-    /*
-    return this.chatService
-    .getMsgList()
-    .subscribe(res => {
-      this.msgList = res;
-      this.scrollToBottom();
-    });
-    */
-
+    this.msgList = this.msgListRef.valueChanges();
   }
 
   /**
@@ -117,7 +106,7 @@ export class Chat {
       this.focus();
     }
 
-    this.chatService.sendMsg(newMsg)
+    this.chatService.sendMsg(newMsg,this.user.groupId)
     this.scrollToBottom()
   }
 

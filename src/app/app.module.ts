@@ -9,8 +9,12 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { EmojiProvider } from '../providers/emoji';
 import { HttpClientModule } from "@angular/common/http";
 import { AngularFireModule } from 'angularfire2';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { AuthProvider } from '../providers/auth/auth';
+import { AngularFireAuthModule } from 'angularfire2/auth';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { EventsProvider } from '../providers/events/events';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyAzPNbO00hRzAOtCOxCq6SRpPzgJBdJmYI",
@@ -31,7 +35,9 @@ export const firebaseConfig = {
       tabsLayout:'icon-left',
       preloadModules: true
     }),
-    AngularFireModule.initializeApp(firebaseConfig)
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireDatabaseModule,
+    AngularFireAuthModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -43,7 +49,9 @@ export const firebaseConfig = {
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     EmojiProvider,
     AngularFireDatabase,
-    AuthProvider
+    AngularFireAuth,
+    AuthProvider,
+    EventsProvider,
   ]
 })
 export class AppModule {}

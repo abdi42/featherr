@@ -29,6 +29,7 @@ export class SignupPage {
   ) {
 
     this.signupForm = formBuilder.group({
+      username:['',Validators.compose([Validators.required])],
       email: ['',
         Validators.compose([Validators.required, EmailValidator.isValid])],
       password: ['',
@@ -40,11 +41,10 @@ export class SignupPage {
     if (!this.signupForm.valid){
       console.log(this.signupForm.value);
     } else {
-      this.authProvider.signupUser(this.signupForm.value.email,
-        this.signupForm.value.password)
+      this.authProvider.signupUser(this.signupForm.value.email,this.signupForm.value.password,this.signupForm.value.username)
       .then(() => {
         this.loading.dismiss().then( () => {
-          this.navCtrl.setRoot(HomePage);
+          this.navCtrl.setRoot('TabsPage');
         });
       }, (error) => {
         this.loading.dismiss().then( () => {

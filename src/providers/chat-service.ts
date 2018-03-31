@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators/map';
 import { HttpClient } from "@angular/common/http";
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 export class ChatMessage {
   messageId: string;
@@ -20,14 +21,14 @@ export class UserInfo {
   id: string;
   name?: string;
   avatar?: string;
+  groupId: string
 }
 
 @Injectable()
 export class ChatService {
-  db: AngularFireDatabase;
   msgListRef;
 
-  constructor(private http: HttpClient,private events: Events,db: AngularFireDatabase) {
+  constructor(private http: HttpClient,private events: Events,private db: AngularFireDatabase,private afAuth: AngularFireAuth,) {
     this.db = db;
     this.msgListRef = this.db.list('messages');
   }
@@ -49,14 +50,14 @@ export class ChatService {
     }, Math.random() * 1800)
   }
 
-  getMsgList(): Observable<ChatMessage[]> {
+  getMsgList(): Observable<any[]> {
     return this.db.list('messages').valueChanges();
   }
 
-  sendMsg(msg: ChatMessage) {
+  sendMsg(msg: ChatMessage,groupId: string) {
     return new Promise((resolve,reject) => {
-      this.msgListRef.push(msg).then((item) => {
-        const itemref = this.db.object('messages/' + item.key);
+      this.db.list('groups/' + groupId + '/messages').push(msg).then((item) => {
+        const itemref = this.db.object('groups/' + groupId + '/messages/' + item.key);
         itemref.update({status:'success'});
         resolve(item);
       });
@@ -64,12 +65,22 @@ export class ChatService {
   }
 
   getUserInfo(): Promise<UserInfo> {
-    const userInfo: UserInfo = {
-      id: '140000198202211138',
-      name: 'Luff',
-      avatar: './assets/user.jpg'
-    };
-    return new Promise(resolve => resolve(userInfo));
+    return new Promise(resolve => {
+      this.afAuth.authState.subscribe(user => {
+        console.log(user.uid)
+        this.db.object('/userProfile/' + user.uid).valueChanges().subscribe(userProfile => {
+          const userInfo: UserInfo = {
+            id: user.uid,
+            name: userProfile.username,
+            avatar: './assets/user.jpg',
+            groupId:userProfile.groupId
+          };
+          resolve(userInfo)
+        })
+      })
+    })
+
+
   }
 
 }
