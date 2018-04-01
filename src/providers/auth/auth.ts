@@ -41,7 +41,7 @@ export class AuthProvider {
         if(!groups){
           groupSub.unsubscribe()
           this.db.list('/groups').push({
-            groupName:'Hello World',
+            groupName:'Group 1',
             users: [{
               username:username,
               uid:uid
@@ -75,7 +75,7 @@ export class AuthProvider {
           if(foundGroup === false){
             groupSub.unsubscribe()
             this.db.list('/groups').push({
-              groupName:'Hello World',
+              groupName:'Group 1',
               users: [{
                 username:username,
                 uid:uid,
