@@ -15,18 +15,27 @@
 
 <ion-content padding>
   <div>
-      <ion-card>
-      <img *ngIf="event.media"  src="{{event.media.content[0].url}}" item-left/>
-    <ion-card-content text-wrap>
+    <ion-card>
+      <img *ngIf="event.media" src="{{event.media.content[0].url}}" item-left/>
+      <ion-card-content text-wrap>
         <ion-card-title *ngIf='event'>
-           {{event.title}}
-          </ion-card-title>
-        <p *ngIf='event'>
-          {{event.description | slice:0:200}}....
-        </p>
-        <p *ngIf='event'>
-          {{event['event:startdate']}} - {{event['event:enddate']}}
-        </p>
+          {{event.title}}
+        </ion-card-title>
+
+        <ion-item *ngIf='event' class='item-block'>
+          <ion-icon  ios="ios-time" md="md-time" item-left></ion-icon>
+          <ion-label>{{event['event:startdate']}} - {{event['event:enddate']}}</ion-label>
+        </ion-item>
+
+        <ion-item *ngIf='event' class='item-block'>
+          <ion-icon ios="ios-pin" md="md-pin" item-left></ion-icon>
+          <ion-label>{{event['event:location']}}</ion-label>
+        </ion-item>
+
+        <ion-item *ngIf='event' class='item-block text-top'>
+          <ion-icon ios="ios-information-circle" md="md-information-circle" item-left></ion-icon>
+          <ion-label>{{event.description}}</ion-label>
+        </ion-item>
       </ion-card-content>
     </ion-card>
     <br>

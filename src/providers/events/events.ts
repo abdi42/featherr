@@ -13,17 +13,17 @@ import request from 'request'
 @Injectable()
 export class EventsProvider {
   events: any;
-  
+
   constructor(public http: HttpClient) {
     console.log('Hello EventsProvider Provider');
   }
-  
+
   getEvent(id){
     return this.events[id]
   }
 
   load(url) {
-    return new Promise(resolve => {    
+    return new Promise((resolve,reject) => {
       var $ = this;
       request({
         url: url,
@@ -33,12 +33,12 @@ export class EventsProvider {
         },
         pool: false,
         followRedirect: true
-  
+
       }, function (error, response, xml) {
         if (!error && response.statusCode == 200) {
           var parser = new xml2js.Parser({ trim: false, normalize: true, mergeAttrs: true });
           parser.addListener("error", function (err) {
-            reject(err, null);
+            reject(err);
           });
           parser.parseString(xml, function (err, result) {
             var res = $.parser(result)
@@ -46,17 +46,48 @@ export class EventsProvider {
             resolve(res);
             //console.log(JSON.stringify(result.rss.channel));
           });
-  
+
         } //else {
           //this.emit('error', new Error('Bad status code'));
         //}
       });
     });
   }
-  
+
+  private formatDate(date) {
+    var monthNames = [
+      "January", "February", "March",
+      "April", "May", "June", "July",
+      "August", "September", "October",
+      "November", "December"
+    ];
+
+    var day = date.getDate();
+    var monthIndex = date.getMonth();
+    var year = date.getFullYear();
+
+
+    var time = new Date();
+    var hours = time.getHours();
+    var minutes = time.getMinutes();
+
+    if (hours > 12) {
+      hours -= 12;
+    } else if (hours === 0) {
+      hours = 12;
+    }
+
+    return day + ' ' + monthNames[monthIndex] + ' ' + year + ' ' + this.pad(hours) + ':' + this.pad(minutes);
+  }
+
+  private pad(n) {
+    return (n < 10) ? '0' + n : n;
+  }
+
   private parser(json) {
     var channel = json.rss.channel;
-    var rss = { items: [] };
+    var rss : any = { items: []};
+
     if (util.isArray(json.rss.channel))
       channel = json.rss.channel[0];
 
@@ -85,9 +116,9 @@ export class EventsProvider {
       if (!util.isArray(channel.item)) {
         channel.item = [channel.item];
       }
-      channel.item.forEach(function (val) {
+      channel.item.forEach((val) => {
         var obj = val;
-        
+
         obj.title = !util.isNullOrUndefined(val.title) ? val.title[0] : '';
         obj.description = !util.isNullOrUndefined(val.description) ? val.description[0] : '';
         obj.url = obj.link = !util.isNullOrUndefined(val.link) ? val.link[0] : '';
@@ -104,6 +135,16 @@ export class EventsProvider {
           obj.media = val.media || {};
           obj.media.thumbnail = val['media:thumbnail'];
         }
+
+        if(val['event:startdate']){
+          obj['event:startdate'] = this.formatDate(new Date(val['event:startdate']))
+        }
+
+        if(val['event:enddate']){
+          obj['event:enddate'] = this.formatDate(new Date(val['event:enddate']))
+        }
+
+
         if (val.enclosure) {
           obj.enclosures = [];
           if (!util.isArray(val.enclosure))
@@ -126,9 +167,9 @@ export class EventsProvider {
     return rss;
 
   }
-  
+
   private read(url, callback) {
     return this.load(url);
-  }  
+  }
 
 }

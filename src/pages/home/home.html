@@ -8,13 +8,10 @@
 
   <ion-list>
 
-    <ion-item navPush="Chat"
-              [navParams]="toUser">
-      <ion-avatar item-left>
-        <img src="./assets/to-user.jpg">
-      </ion-avatar>
-      <h2 *ngIf="group">{{group.groupName}}</h2>
-      <p *ngIf="group">{{group.messages[group.messages.length-1].message}}</p>
+    <ion-item class='group' navPush="Chat" *ngIf="group">
+      <ion-icon ios="ios-people" md="md-people" item-left padding></ion-icon>
+      <h2>{{group.groupName}}</h2>
+      <p *ngIf="group.messages">{{group.messages[group.messages.length-1].message}}</p>
     </ion-item>
   </ion-list>
 </ion-content>

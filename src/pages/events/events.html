@@ -8,18 +8,17 @@
 
 
 <ion-content padding>
-  <ion-list *ngFor="let event of events">
-    <ion-card>
-      <ion-item navPush="EventDetailPage"
-                [navParams]="event">
-        <ion-avatar item-left>
-          <img *ngIf="event.media"  src="{{event.media.content[0].url}}">
-        </ion-avatar>
-        <h2>{{event.title}}</h2>
-        <p>{{event.description | slice:0:200}}....</p>
-      </ion-item>
-    </ion-card>
-    <br>
-    <br>
+
+  <ion-list>
+    <ion-item *ngFor="let event of events" navPush="EventDetailPage"
+              [navParams]="event">
+      <ion-thumbnail item-start>
+        <img *ngIf="event.media"  src="{{event.media.content[0].url}}">
+      </ion-thumbnail>
+      <h2>{{event.title}}</h2>
+      <p>{{event.description | slice:0:200}}....</p>
+      <button ion-button clear item-end>View</button>
+    </ion-item>
   </ion-list>
+
 </ion-content>

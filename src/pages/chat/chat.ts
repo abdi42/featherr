@@ -16,7 +16,6 @@ export class Chat {
   @ViewChild('chat_input') messageInput: ElementRef;
   msgList: Observable<any[]>;
   user: UserInfo;
-  toUser: UserInfo;
   editorMsg = '';
   showEmojiPicker = false;
   msgListRef;
@@ -24,12 +23,6 @@ export class Chat {
   constructor(navParams: NavParams,
               private chatService: ChatService,
               private events: Events,private db: AngularFireDatabase) {
-    // Get the navParams toUserId parameter
-    this.toUser = {
-      id: navParams.get('toUserId'),
-      name: navParams.get('toUserName'),
-      groupId:''
-    };
     // Get mock user information
   }
 
@@ -43,16 +36,12 @@ export class Chat {
     //get message list
     this.chatService.getUserInfo()
     .then((res) => {
-      console.log(res)
       this.user = res
       this.msgListRef = this.db.list('groups/' + this.user.groupId + '/messages');
       this.getMsg();
       this.scrollToBottom();
     });
-    // Subscribe to received  new message events
-    this.events.subscribe('chat:received', msg => {
-      this.pushNewMsg(msg);
-    })
+
   }
 
   onFocus() {
@@ -93,7 +82,6 @@ export class Chat {
       userId: this.user.id,
       userName: this.user.name,
       userAvatar: this.user.avatar,
-      toUserId: this.toUser.id,
       time: Date.now(),
       message: this.editorMsg,
       status: 'pending'
@@ -114,23 +102,6 @@ export class Chat {
    * @name pushNewMsg
    * @param msg
    */
-  pushNewMsg(msg: ChatMessage) {
-    const userId = this.user.id,
-      toUserId = this.toUser.id;
-    // Verify user relationships
-    if (msg.userId === userId && msg.toUserId === toUserId) {
-      this.msgListRef.push(msg).then((item) => {
-        const itemref = this.db.object('messages/' + item.key);
-        itemref.update({status:'success'});
-      });
-    } /*else if (msg.toUserId === userId && msg.userId === toUserId) {
-      this.msgListRef.push(msg).then((item) => {
-        const itemref = this.db.object('messages/' + item.key);
-        itemref.update({status:'success'});
-      });
-    }*/
-    this.scrollToBottom();
-  }
 
   scrollToBottom() {
     setTimeout(() => {

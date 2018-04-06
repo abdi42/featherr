@@ -1,6 +1,7 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { BrowserModule } from '@angular/platform-browser';
+import { Camera } from '@ionic-native/camera';
 
 import { MyApp } from './app.component';
 
@@ -52,6 +53,7 @@ export const firebaseConfig = {
     AngularFireAuth,
     AuthProvider,
     EventsProvider,
+    Camera
   ]
 })
 export class AppModule {}

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage } from 'ionic-angular';
+import { IonicPage,NavController, } from 'ionic-angular';
 import { ChatService, ChatMessage, UserInfo } from "../../providers/chat-service";
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
@@ -13,25 +13,23 @@ export class HomePage {
 
   user: UserInfo;
   group;
-  
-  constructor(private db: AngularFireDatabase,private chatService: ChatService) {
-    this.toUser = {
-      toUserId:'210000198410281948',
-      toUserName:'Hancock'
-    }
+
+  constructor(public navCtrl: NavController,private db: AngularFireDatabase,private chatService: ChatService) {
+
   }
-  
+
   ionViewDidEnter() {
     //get message list
     this.chatService.getUserInfo()
     .then((res) => {
-      console.log(res)
       this.user = res
-      
+
       this.db.object('groups/' + res.groupId).valueChanges().subscribe((res) => {
         console.log(res)
         this.group = res
-        this.group.messages = Object.values(this.group.messages)
+        if(this.group.messages){
+          this.group.messages = Object.values(this.group.messages)
+        }
       })
 
     });

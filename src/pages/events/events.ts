@@ -23,8 +23,8 @@ export class EventsPage {
   }
 
   ionViewDidEnter() {
-    this.eventService.load('https://api.orgsync.com/api/v3/communities/618/events.rss?key=vl9LjMx-9vawh8DStQ7HYZ5iJ8kAwlBKP-nXS9Spvsk&per_page=100&upcoming=true').then(rss => {
-      this.events = rss.items 
+    this.eventService.load('https://api.orgsync.com/api/v3/communities/618/events.rss?key=vl9LjMx-9vawh8DStQ7HYZ5iJ8kAwlBKP-nXS9Spvsk&per_page=100&upcoming=true').then((rss: any) => {
+      this.events = rss.items
     });
   }
 

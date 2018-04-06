@@ -7,7 +7,7 @@
   <form [formGroup]="signupForm" (submit)="signupUser()" novalidate>
 
     <ion-item>
-      <ion-label stacked>Username</ion-label>
+      <ion-label stacked>Full Name</ion-label>
       <ion-input formControlName="username" type='text' placeholder="Your username"
         [class.invalid]="!signupForm.controls.username.valid && blur">
       </ion-input>
@@ -25,6 +25,13 @@
       <ion-input formControlName="password" type="password" placeholder="Your password"
         [class.invalid]="!signupForm.controls.password.valid && blur">
       </ion-input>
+    </ion-item>
+
+    <ion-item id='upload' icon-right no-lines margin>
+      <button ion-button block clear type="button" padding (click)="uploadPicture()">
+        Upload Profile Pic
+        <ion-icon name="ios-camera-outline"></ion-icon>
+      </button>
     </ion-item>
 
     <button ion-button block type="submit" [disabled]="!signupForm.valid">

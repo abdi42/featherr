@@ -11,7 +11,6 @@ export class ChatMessage {
   userId: string;
   userName: string;
   userAvatar: string;
-  toUserId: string;
   time: number | string;
   message: string;
   status: string;
@@ -39,7 +38,6 @@ export class ChatService {
       userId: '210000198410281948',
       userName: 'Hancock',
       userAvatar: './assets/to-user.jpg',
-      toUserId: '140000198202211138',
       time: Date.now(),
       message: msg.message,
       status: 'success'
@@ -65,22 +63,23 @@ export class ChatService {
   }
 
   getUserInfo(): Promise<UserInfo> {
-    return new Promise(resolve => {
+    return new Promise( (resolve) => {
       this.afAuth.authState.subscribe(user => {
-        console.log(user.uid)
-        this.db.object('/userProfile/' + user.uid).valueChanges().subscribe(userProfile => {
-          const userInfo: UserInfo = {
-            id: user.uid,
-            name: userProfile.username,
-            avatar: './assets/user.jpg',
-            groupId:userProfile.groupId
-          };
-          resolve(userInfo)
-        })
+        if(user){
+          this.db.object('/userProfile/' + user.uid).valueChanges().subscribe((userProfile:any) => {
+            if(userProfile){
+              const userInfo: UserInfo = {
+                id: user.uid,
+                name: userProfile.username,
+                avatar: userProfile.avatar,
+                groupId:userProfile.groupId
+              };
+              resolve(userInfo)
+            }
+          })
+        }
       })
     })
-
-
   }
 
 }
