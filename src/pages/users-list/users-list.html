@@ -32,7 +32,7 @@
   <ion-list>
     <ion-item class='item-block text-top friend' *ngFor="let user of users | async" margin-bottom>
       <ion-avatar item-left>
-        <img src="./assets/to-user.jpg">
+        <img [src]="user.avatar">
       </ion-avatar>
       <ion-label>{{user.username}}</ion-label>
       <hr>

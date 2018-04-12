@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular';
-import { map } from 'rxjs/operators/map';
-import { HttpClient } from "@angular/common/http";
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -20,14 +18,17 @@ export class UserInfo {
   id: string;
   name?: string;
   avatar?: string;
-  groupId: string
+  email: string;
+  uid: string;
+  groups: any[];
+  groupCount:number;
 }
 
 @Injectable()
 export class ChatService {
   msgListRef;
 
-  constructor(private http: HttpClient,private events: Events,private db: AngularFireDatabase,private afAuth: AngularFireAuth,) {
+  constructor(private events: Events,private db: AngularFireDatabase,private afAuth: AngularFireAuth,) {
     this.db = db;
     this.msgListRef = this.db.list('messages');
   }
@@ -67,13 +68,23 @@ export class ChatService {
       this.afAuth.authState.subscribe(user => {
         if(user){
           this.db.object('/userProfile/' + user.uid).valueChanges().subscribe((userProfile:any) => {
+            console.log(userProfile)
             if(userProfile){
               const userInfo: UserInfo = {
                 id: user.uid,
                 name: userProfile.username,
                 avatar: userProfile.avatar,
-                groupId:userProfile.groupId
+                groups:userProfile.groups,
+                email:userProfile.email,
+                uid:user.uid,
+                groupCount:userProfile.groupCount
               };
+              if(userProfile.groups){
+                userInfo.groups = Object.values(userProfile.groups)
+              }
+              else {
+                userInfo.groups = []
+              }
               resolve(userInfo)
             }
           })

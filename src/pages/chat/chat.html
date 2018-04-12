@@ -1,7 +1,12 @@
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>Group Chat</ion-title>
+  <ion-navbar color='primary' padding-left padding-right>
+    <ion-title text-center>Group Chat</ion-title>
+    <ion-buttons end *ngIf="!group">
+      <button ion-button icon-right color='light' clear (click)="showOptions()">
+         <ion-icon ios="ios-more" md="md-more"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -14,7 +19,11 @@
          class="message"
          [class.left]=" msg.userId !== user.id "
          [class.right]=" msg.userId === user.id ">
-      <img class="user-img" [src]="msg.userAvatar" alt="" src="">
+      <div class="item-profile">
+         <div class="item-avatar">
+           <img class="user-img" [src]="msg.userAvatar" alt="" src="">
+         </div>
+       </div>
       <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner>
       <div class="msg-detail">
         <div class="msg-info">

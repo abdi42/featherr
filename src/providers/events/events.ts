@@ -16,6 +16,7 @@ export class EventsProvider {
 
   constructor(public http: HttpClient) {
     console.log('Hello EventsProvider Provider');
+    this.events = null;
   }
 
   getEvent(id){
@@ -24,33 +25,38 @@ export class EventsProvider {
 
   load(url) {
     return new Promise((resolve,reject) => {
-      var $ = this;
-      request({
-        url: url,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0',
-          accept: 'text/html,application/xhtml+xml'
-        },
-        pool: false,
-        followRedirect: true
+      if(this.events){
+        resolve(this.events)
+      }
+      else {
+        var $ = this;
+        request({
+          url: url,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0',
+            accept: 'text/html,application/xhtml+xml'
+          },
+          pool: false,
+          followRedirect: true
 
-      }, function (error, response, xml) {
-        if (!error && response.statusCode == 200) {
-          var parser = new xml2js.Parser({ trim: false, normalize: true, mergeAttrs: true });
-          parser.addListener("error", function (err) {
-            reject(err);
-          });
-          parser.parseString(xml, function (err, result) {
-            var res = $.parser(result)
-            $.events = res;
-            resolve(res);
-            //console.log(JSON.stringify(result.rss.channel));
-          });
+        }, (error, response, xml) => {
+          if (!error && response.statusCode == 200) {
+            var parser = new xml2js.Parser({ trim: false, normalize: true, mergeAttrs: true });
+            parser.addListener("error",(err) => {
+              reject(err);
+            });
+            parser.parseString(xml, (err, result) => {
+              var res = $.parser(result)
+              this.events = res;
+              resolve(res);
+              //console.log(JSON.stringify(result.rss.channel));
+            });
 
-        } //else {
-          //this.emit('error', new Error('Bad status code'));
-        //}
-      });
+          } //else {
+            //this.emit('error', new Error('Bad status code'));
+          //}
+        });
+      }
     });
   }
 

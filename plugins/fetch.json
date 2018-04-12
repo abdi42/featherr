@@ -62,5 +62,13 @@
     },
     "is_top_level": true,
     "variables": {}
+  },
+  "info.protonet.imageresizer": {
+    "source": {
+      "type": "registry",
+      "id": "git+https://github.com/protonet/cordova-plugin-image-resizer.git"
+    },
+    "is_top_level": true,
+    "variables": {}
   }
 }

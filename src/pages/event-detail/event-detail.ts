@@ -12,10 +12,10 @@ import { EventsProvider } from "../../providers/events/events";
 @Component({
   selector: 'page-event-detail',
   templateUrl: 'event-detail.html',
-}) 
+})
 export class EventDetailPage {
   event: any;
-  constructor(public navCtrl: NavController, public navParams: NavParams,private eventService: EventsProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams) {
     this.event = {}
   }
 

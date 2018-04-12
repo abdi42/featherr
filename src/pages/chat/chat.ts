@@ -1,9 +1,11 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { IonicPage, NavParams } from 'ionic-angular';
+import { IonicPage, NavParams,ActionSheetController,NavController } from 'ionic-angular';
 import { Events, Content } from 'ionic-angular';
 import { ChatService, ChatMessage, UserInfo } from "../../providers/chat-service";
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
+import { GroupsProvider } from '../../providers/groups/groups';
+import 'rxjs/add/operator/take';
 
 @IonicPage()
 @Component({
@@ -20,9 +22,13 @@ export class Chat {
   showEmojiPicker = false;
   msgListRef;
 
-  constructor(navParams: NavParams,
+  constructor(private navParams: NavParams,
               private chatService: ChatService,
-              private events: Events,private db: AngularFireDatabase) {
+              private events: Events,
+              private db: AngularFireDatabase,
+              public actionSheetCtrl: ActionSheetController,
+              public groups: GroupsProvider,
+              private navCtrl:NavController) {
     // Get mock user information
   }
 
@@ -37,7 +43,7 @@ export class Chat {
     this.chatService.getUserInfo()
     .then((res) => {
       this.user = res
-      this.msgListRef = this.db.list('groups/' + this.user.groupId + '/messages');
+      this.msgListRef = this.db.list('groups/' + this.navParams.data.groupId + '/messages');
       this.getMsg();
       this.scrollToBottom();
     });
@@ -75,8 +81,6 @@ export class Chat {
   sendMsg() {
     if (!this.editorMsg.trim()) return;
 
-    // Mock message
-    const id = Date.now().toString();
     let newMsg: ChatMessage = {
       messageId: Date.now().toString(),
       userId: this.user.id,
@@ -94,9 +98,44 @@ export class Chat {
       this.focus();
     }
 
-    this.chatService.sendMsg(newMsg,this.user.groupId)
+    console.log(this.navParams.data.groupId)
+
+    this.chatService.sendMsg(newMsg,this.navParams.data.groupId)
     this.scrollToBottom()
+    this.content.scrollToBottom();
   }
+
+  showOptions(){
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Option',
+      cssClass: 'action-sheets-basic-page',
+      buttons: [
+        {
+          text: 'Leave Group',
+          role: 'destructive',
+          handler: () => {
+            this.db.object('/groups/' + this.navParams.data.groupId).valueChanges().take(1).subscribe((group:any) => {
+              this.groups.leaveGroup(this.user.uid,this.navParams.data.groupId,group.count).then(() => {
+                this.db.object('/userProfile/' + this.user.uid).update({groupId:null});
+                this.navCtrl.setRoot('TabsPage')
+              });
+            })
+          }
+        },
+        /*
+        {
+          text: 'Feedback',
+          icon: !this.platform.is('ios') ? 'ios-images-outline' : null,
+          handler: () => {
+            this.Feedback();
+          }
+        },
+        */
+      ]
+    });
+    actionSheet.present();
+  }
+
 
   /**
    * @name pushNewMsg

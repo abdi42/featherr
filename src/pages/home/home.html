@@ -1,17 +1,30 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>Home</ion-title>
-  </ion-navbar>
+
+  <ion-toolbar color='primary' padding-left padding-right>
+    <ion-title text-center>Home</ion-title>
+    <ion-buttons end *ngIf="!group">
+      <button ion-button icon-right color='light' clear (click)="joinGroup()">
+        Join
+        <ion-icon name="md-add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="groups">
 
-  <ion-list>
-
-    <ion-item class='group' navPush="Chat" *ngIf="group">
+  <ion-list *ngFor="let group of groupsList; let i = index" [attr.data-index]="i" no-margin>
+    <ion-item class='group' (click)="goToChat(group)" *ngIf="group">
       <ion-icon ios="ios-people" md="md-people" item-left padding></ion-icon>
-      <h2>{{group.groupName}}</h2>
-      <p *ngIf="group.messages">{{group.messages[group.messages.length-1].message}}</p>
+      <h2>Group {{i + 1}}</h2>
+      <p *ngIf="group.messages">{{group.messages[group.messages.length-1].userName}} : {{group.messages[group.messages.length-1].message}}</p>
     </ion-item>
   </ion-list>
+
+  <div id='joinGroup' text-center *ngIf="!groupsList">
+    <ion-icon name="md-add"></ion-icon>
+    <br>
+    <h1>Join A Group</h1>
+  </div>
 </ion-content>

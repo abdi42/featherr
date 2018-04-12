@@ -41,4 +41,5 @@
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
     <plugin name="cordova-plugin-advanced-http" spec="^1.11.1" />
     <plugin name="cordova-plugin-camera" spec="^4.0.2" />
+    <plugin name="info.protonet.imageresizer" spec="git+https://github.com/protonet/cordova-plugin-image-resizer.git" />
 </widget>

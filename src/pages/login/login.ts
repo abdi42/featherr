@@ -9,7 +9,6 @@ import {
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { EmailValidator } from '../../validators/emails';
 import { AuthProvider } from '../../providers/auth/auth';
-import { HomePage } from '../home/home';
 
 /**
  * Generated class for the LoginPage page.

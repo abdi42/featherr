@@ -1,0 +1,55 @@
+{
+  "_from": "git+https://github.com/protonet/cordova-plugin-image-resizer.git",
+  "_id": "cordova-plugin-image-resizer@0.1.1",
+  "_inBundle": false,
+  "_location": "/cordova-plugin-image-resizer",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "git+https://github.com/protonet/cordova-plugin-image-resizer.git",
+    "rawSpec": "git+https://github.com/protonet/cordova-plugin-image-resizer.git",
+    "saveSpec": "git+https://github.com/protonet/cordova-plugin-image-resizer.git",
+    "fetchSpec": "https://github.com/protonet/cordova-plugin-image-resizer.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/protonet/cordova-plugin-image-resizer.git#a87a16d2517cb6f46e6aaf984fedd7b062a128a3",
+  "_spec": "git+https://github.com/protonet/cordova-plugin-image-resizer.git",
+  "_where": "/Users/abdullahimahamed/Projects/featherr",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/JoschkaSchulz/cordova-plugin-image-resizer/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "info.protonet.imageresizer",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "deprecated": false,
+  "description": "Plugin for resizing images only with the uri of the image.",
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.5.0"
+    }
+  ],
+  "homepage": "https://github.com/JoschkaSchulz/cordova-plugin-image-resizer#readme",
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android"
+  ],
+  "license": "MIT",
+  "name": "cordova-plugin-image-resizer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoschkaSchulz/cordova-plugin-image-resizer.git"
+  },
+  "version": "0.1.1"
+}

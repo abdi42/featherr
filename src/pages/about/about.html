@@ -6,6 +6,24 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
+  <ion-list *ngIf='user'>  
+    <ion-item-divider color="light">
+      User Info
+    </ion-item-divider>
+    <ion-item>{{user.name}}</ion-item>
+    <ion-item>{{user.email}}</ion-item>
+    <div text-right>
+      <!-- <button ion-button clear>Edit Profile Info</button> -->
+    </div>
+  </ion-list>
 
+  <ion-list no-lines>
+    <ion-item-divider color="light">Other</ion-item-divider>
+    <div padding>
+      <button ion-button block outline (click)="resetPassword()">Reset Password</button>
+      <br>
+      <button ion-button color="danger" block outline (click)="logOut()">Log Out</button>
+    </div>
+  </ion-list>
 </ion-content>

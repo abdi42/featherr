@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage,NavController, } from 'ionic-angular';
-import { ChatService, ChatMessage, UserInfo } from "../../providers/chat-service";
+import { IonicPage,NavController,ModalController,Loading,LoadingController } from 'ionic-angular';
+import { ChatService, UserInfo } from "../../providers/chat-service";
 import { AngularFireDatabase } from 'angularfire2/database';
-import { Observable } from 'rxjs/Observable';
+import { GroupsProvider } from '../../providers/groups/groups';
 
 @IonicPage()
 @Component({
@@ -12,29 +12,68 @@ import { Observable } from 'rxjs/Observable';
 export class HomePage {
 
   user: UserInfo;
-  group;
+  groupsList: any[] = [];
+  loading: Loading;
 
-  constructor(public navCtrl: NavController,private db: AngularFireDatabase,private chatService: ChatService) {
+  constructor(
+    public navCtrl: NavController,
+    private db: AngularFireDatabase,
+    private chatService: ChatService,
+    public groups: GroupsProvider,
+    public modalCtrl: ModalController,
+    public loadingCtrl: LoadingController) {
 
+  }
+
+  ionViewDidLoad() {
+    //get message list
+    this.chatService.getUserInfo()
+    .then((res) => {
+      this.user = res
+    });
   }
 
   ionViewDidEnter() {
     //get message list
     this.chatService.getUserInfo()
     .then((res) => {
-      this.user = res
-
-      this.db.object('groups/' + res.groupId).valueChanges().subscribe((res) => {
-        console.log(res)
-        this.group = res
-        if(this.group.messages){
-          this.group.messages = Object.values(this.group.messages)
-        }
-      })
-
+      this.getGroups();
     });
   }
 
+  getGroups(){
+    this.groupsList = []
+    if(this.user.groups){
+      for(var i=0;i<this.user.groups.length;i++){
+        var currentGroup = this.user.groups[i]
+        if(currentGroup.leftGroup == false){
+          this.groups.getGroup(currentGroup.groupId).then((group) => {
+            console.log(group.groupId,'eweeeeee')
+            this.groupsList.push(group)
+          })
+        }
+      }
+    }
+  }
+
+  goToChat(group){
+    this.loading = this.loadingCtrl.create({
+      dismissOnPageChange:true
+    });
+
+    this.loading.dismiss().then( () => {
+      this.navCtrl.push('Chat',group)
+    });
+
+    this.loading.present();
+  }
+
+  joinGroup(){
+    this.groups.addToGroup(this.user.name,this.user.uid,this.user.groups).then((groupId) => {
+      let modal = this.modalCtrl.create('UsersListPage',{group: groupId});
+      modal.present();
+    })
+  }
 
 
 }
