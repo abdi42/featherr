@@ -2,7 +2,6 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { BrowserModule } from '@angular/platform-browser';
 import { Camera } from '@ionic-native/camera';
-import { ImageResizer } from '@ionic-native/image-resizer';
 import { MyApp } from './app.component';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -18,6 +17,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { EventsProvider } from '../providers/events/events';
 import { GroupsProvider } from '../providers/groups/groups';
 import { ChatService} from "../providers/chat-service";
+//import { TextAvatarDirective } from "../directives/text-avatar/text-avatar";
 
 export const firebaseConfig = {
   apiKey: "AIzaSyAzPNbO00hRzAOtCOxCq6SRpPzgJBdJmYI",
@@ -29,6 +29,7 @@ export const firebaseConfig = {
 @NgModule({
   declarations: [
     MyApp,
+    //TextAvatarDirective
   ],
   imports: [
     BrowserModule,
@@ -56,7 +57,6 @@ export const firebaseConfig = {
     AuthProvider,
     EventsProvider,
     Camera,
-    ImageResizer,
     ChatService,
     GroupsProvider
   ]

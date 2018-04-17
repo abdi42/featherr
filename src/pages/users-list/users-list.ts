@@ -24,14 +24,14 @@ export class UsersListPage {
   }
 
   ionViewDidLoad() {
-  }
-
-  ionViewDidEnter() {
     this.chatService.getUserInfo()
     .then((res) => {
       this.users = this.db.list('groups/' + this.navParams.data.group + '/users').valueChanges();
       console.log(this.users)
     });
+  }
+
+  ionViewDidEnter() {
   }
 
   goToHome(){

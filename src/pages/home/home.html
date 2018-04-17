@@ -2,8 +2,9 @@
 
   <ion-toolbar color='primary' padding-left padding-right>
     <ion-title text-center>Home</ion-title>
-    <ion-buttons end *ngIf="!group">
-      <button ion-button icon-right color='light' clear (click)="joinGroup()">
+    <ion-buttons end>
+      <ion-spinner name="bubbles" color="light" *ngIf='buttonClicked'></ion-spinner>
+      <button ion-button icon-right color='light' clear *ngIf='!buttonClicked' (click)="joinGroup()">
         Join
         <ion-icon name="md-add"></ion-icon>
       </button>

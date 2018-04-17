@@ -5,11 +5,13 @@ import { ChatService } from "../../providers/chat-service";
 import { RelativeTime } from "../../pipes/relative-time";
 import { EmojiPickerComponentModule } from "../../components/emoji-picker/emoji-picker.module";
 import { EmojiProvider } from "../../providers/emoji";
+import { TextAvatarDirective } from "../../directives/text-avatar/text-avatar";
 
 @NgModule({
   declarations: [
     Chat,
-    RelativeTime
+    RelativeTime,
+    TextAvatarDirective
   ],
   imports: [
     EmojiPickerComponentModule,

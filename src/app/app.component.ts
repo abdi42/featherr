@@ -18,10 +18,9 @@ export class MyApp {
       projectId: 'featherr-ba91a',
     })
 
-    const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+    firebase.auth().onAuthStateChanged(user => {
       if (!user) {
         this.rootPage = 'LoginPage';
-        unsubscribe();
       }
     });
 

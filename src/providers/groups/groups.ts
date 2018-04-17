@@ -21,7 +21,7 @@ export class GroupsProvider {
 
   addToGroup(username: string, uid: string,groupsList:any[]): Promise<string> {
     return new Promise(resolve => {
-      const groupSub = this.db.object('/groups').valueChanges().subscribe(groups => {
+      const groupSub = this.db.object('/groups').valueChanges().take(1).subscribe(groups => {
 
         let newMsg: ChatMessage = {
           messageId: Date.now().toString(),
@@ -35,7 +35,6 @@ export class GroupsProvider {
 
         var groupCount = groupsList.length + 1
         if(!groups){
-          groupSub.unsubscribe()
           this.db.list('/groups').push({
             count:1,
             groupName:'Group ' + groupCount,
@@ -44,6 +43,7 @@ export class GroupsProvider {
               uid:uid
             }],
           }).then((group) => {
+            console.log("FIRST")
             this.addUser(uid,group.key,groupsList.length)
             this.chatService.sendMsg(newMsg,group.key)
             resolve(group.key)
@@ -53,27 +53,31 @@ export class GroupsProvider {
           console.log("sddsfsd")
 
           var foundGroup = false;
-
+          for(var key in groups){
+            console.log(this.joinedGroup(groupsList,key),"LIST")
+          }
           for (var key in groups) {
             var group = groups[key]
             if(foundGroup) {break}
-            if(group.count < 3 && foundGroup == false && this.joinedGroup(groupsList,key) == false){
-              foundGroup = true
-              groupSub.unsubscribe()
-              this.db.list('/groups/' + key + '/users').push({
-                username:username,
-                uid:uid
-              }).then((user) => {
-                this.db.object('groups/' + key).update({count:group.count + 1})
+            if(group.count < 3 && foundGroup == false){
+              if(this.joinedGroup(groupsList,key) == false){
+                console.log(key,"SDFSDFDSFDSF")
+                foundGroup = true
                 this.addUser(uid,key,groupsList.length)
                 this.chatService.sendMsg(newMsg,key)
-                resolve(key)
-              })
+                this.db.list('/groups/' + key + '/users').push({
+                  username:username,
+                  uid:uid
+                }).then((user) => {
+                  this.db.object('groups/' + key).update({count:group.count + 1})
+                  //console.log(key,"HSDSDSD","SECOND")
+                  resolve(key)
+                })
+              }
             }
           }
 
           if(foundGroup === false){
-            groupSub.unsubscribe()
             this.db.list('/groups').push({
               count:1,
               groupName:'Group ' + groupCount,
@@ -82,6 +86,7 @@ export class GroupsProvider {
                 uid:uid,
               }]
             }).then((group) => {
+              console.log("THIRD")
               this.addUser(uid,group.key,groupsList.length)
               this.chatService.sendMsg(newMsg,group.key)
               resolve(group.key)
@@ -94,18 +99,20 @@ export class GroupsProvider {
 
   addUser(uid,groupKey,groupCount){
     console.log(groupCount)
-    this.db.object('/userProfile/' + uid).update({groupCount: (groupCount + 1)});
-    console.log(groupKey)
-    this.db.list('/userProfile/' + uid + '/groups').push({
-      groupId:groupKey,
-      leftGroup:false
+    this.chatService.getUserInfo().then((res) => {
+      this.db.object('/userProfile/' + uid).update({groupCount: (res.groupCount + 1)});
+      console.log(groupKey)
+      this.db.list('/userProfile/' + uid + '/groups').push({
+        groupId:groupKey,
+        leftGroup:false
+      })
     })
   }
 
   joinedGroup(groupsList,groupKey){
+    console.log(groupsList,groupKey,'HELOOOOO')
     for(var i=0;i<groupsList.length;i++){
       var group = groupsList[i]
-
       if(group.groupId == groupKey){
         return true
       }
@@ -133,7 +140,17 @@ export class GroupsProvider {
     })
   }
 
-  leaveGroup(uid,groupKey,groupCount){
+  leaveGroup(uid,groupKey,groupCount,username,currentGroupCount){
+    let newMsg: ChatMessage = {
+      messageId: Date.now().toString(),
+      userId: "zjqpx71PksfsVbYJB4J6Eqh3WZT2",
+      userName: "Featherr",
+      userAvatar: "",
+      time: Date.now(),
+      message: username + " left the group!",
+      status: 'pending'
+    };    
+    
     return new Promise((resolve) => {
       this.db.object('/groups/' + groupKey + '/users').valueChanges().take(1).subscribe((users:any) => {
         console.log(users)
@@ -141,8 +158,9 @@ export class GroupsProvider {
           var user = users[key]
           console.log(key)
           if(user.uid == uid){
-            this.db.object('/groups/' + groupKey).update({count: groupCount-1});
+            this.chatService.sendMsg(newMsg,groupKey)
             this.db.object('/groups/' + groupKey + '/users/' + key).remove().then(_ => {
+              this.db.object('/groups/' + groupKey).update({count: groupCount-1});
               resolve()
             });
             var object = {}
@@ -155,8 +173,13 @@ export class GroupsProvider {
                   var object = {}
                   object[key] = "NULL";
                   this.db.object('/userProfile/' + uid + '/groups/' + key).update({leftGroup:true});
+                  this.chatService.getUserInfo()
+                  .then((res) => {
+                    this.db.object('/userProfile/' + uid).update({groupCount:res.groupCount-1});
+                  });
                 }
               }
+              console.log(groups,"HELLOOO")
             })
 
           }

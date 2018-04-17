@@ -38,7 +38,6 @@ export class SignupPage {
     public actionSheetCtrl: ActionSheetController,
     public platform: Platform,
     public groups: GroupsProvider,
-    private imageResizer: ImageResizer
   ) {
 
     this.signupForm = formBuilder.group({

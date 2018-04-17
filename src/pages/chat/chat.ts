@@ -115,7 +115,7 @@ export class Chat {
           role: 'destructive',
           handler: () => {
             this.db.object('/groups/' + this.navParams.data.groupId).valueChanges().take(1).subscribe((group:any) => {
-              this.groups.leaveGroup(this.user.uid,this.navParams.data.groupId,group.count).then(() => {
+              this.groups.leaveGroup(this.user.uid,this.navParams.data.groupId,group.count,this.user.name,this.user.groupCount).then(() => {
                 this.db.object('/userProfile/' + this.user.uid).update({groupId:null});
                 this.navCtrl.setRoot('TabsPage')
               });

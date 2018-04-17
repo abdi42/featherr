@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage,NavController,ModalController,Loading,LoadingController } from 'ionic-angular';
+import { IonicPage,NavController,ModalController,Loading,LoadingController,AlertController } from 'ionic-angular';
 import { ChatService, UserInfo } from "../../providers/chat-service";
 import { AngularFireDatabase } from 'angularfire2/database';
 import { GroupsProvider } from '../../providers/groups/groups';
@@ -14,14 +14,16 @@ export class HomePage {
   user: UserInfo;
   groupsList: any[] = [];
   loading: Loading;
-
+  buttonClicked: any = false;
+  
   constructor(
     public navCtrl: NavController,
     private db: AngularFireDatabase,
     private chatService: ChatService,
     public groups: GroupsProvider,
     public modalCtrl: ModalController,
-    public loadingCtrl: LoadingController) {
+    public loadingCtrl: LoadingController,
+    public alertCtrl: AlertController) {
 
   }
 
@@ -31,12 +33,14 @@ export class HomePage {
     .then((res) => {
       this.user = res
     });
+    this.buttonClicked = false;
   }
 
   ionViewDidEnter() {
     //get message list
     this.chatService.getUserInfo()
     .then((res) => {
+      this.user = res
       this.getGroups();
     });
   }
@@ -69,10 +73,20 @@ export class HomePage {
   }
 
   joinGroup(){
-    this.groups.addToGroup(this.user.name,this.user.uid,this.user.groups).then((groupId) => {
-      let modal = this.modalCtrl.create('UsersListPage',{group: groupId});
-      modal.present();
-    })
+    this.buttonClicked = true
+    if(this.user.groupCount < 3 || this.user.groupCount == 3){
+      this.groups.addToGroup(this.user.name,this.user.uid,this.user.groups).then((groupId) => {
+        let modal = this.modalCtrl.create('UsersListPage',{group: groupId});
+        modal.present();
+      })
+    }
+    else {
+      let alert = this.alertCtrl.create({
+        subTitle: 'I\'m sorry but you can join only 3 groups at a time. If you want to join another group. Head over to one of the group chats and click leave.',        buttons: ['Dismiss']
+      });
+      
+      alert.present();
+    }
   }
 
 

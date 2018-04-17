@@ -29,7 +29,9 @@ export class AboutPage {
     this.loading.present();
 
     this.loading.dismiss().then( () => {
-      this.authProvider.logoutUser()
+      this.authProvider.logoutUser().then( () => {
+        this.navCtrl.setRoot('LoginPage')
+      })
     });
 
   }

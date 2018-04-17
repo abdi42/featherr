@@ -9,7 +9,7 @@
   <ion-toolbar color='primary'>
     <ion-title text-center>New Group</ion-title>
     <ion-buttons end>
-      <button ion-button icon-right color='light' clear (click)="goToHome()">
+      <button *ngIf="users" ion-button icon-right color='light' clear (click)="goToHome()">
         Home
         <ion-icon name="ios-arrow-forward"></ion-icon>
       </button>
@@ -29,7 +29,13 @@
     <h2>Here is a your group! 🎉</h2>
   </div>
   <br>
-  <ion-list>
+  <ion-list *ngIf="!users">
+    <ion-item>
+      <ion-spinner name="bubbles"></ion-spinner>
+    </ion-item>
+  </ion-list>
+  
+  <ion-list *ngIf="users">
     <ion-item class='item-block text-top friend' *ngFor="let user of users | async" margin-bottom>
       <ion-avatar item-left>
         <img [src]="user.avatar">
