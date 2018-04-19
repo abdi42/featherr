@@ -3,7 +3,6 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { BrowserModule } from '@angular/platform-browser';
 import { Camera } from '@ionic-native/camera';
 import { MyApp } from './app.component';
-
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { EmojiProvider } from '../providers/emoji';
